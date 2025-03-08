@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 import requests
+import numpy as np
 import datetime
 
 # Currency Conversion API
@@ -24,7 +25,7 @@ if 'category_limits' not in st.session_state:
     st.session_state['category_limits'] = {}
 
 # App title
-st.title("Trip Expense Calculator")
+st.title("Vietnam Trip Expense Tracker")
 
 # Input fields
 st.header("Add Expense")
@@ -59,22 +60,15 @@ if len(st.session_state['expenses']) > 0:
     total_expense = df['Amount (₹)'].sum()
     st.write(f"### Total Expense: ₹{total_expense:.2f}")
 
-    # Plot expenses by category
+    # Plot expenses by category using Plotly
     st.write("### Expense Breakdown")
-    fig, ax = plt.subplots()
-    df.groupby('Category')['Amount (₹)'].sum().plot(kind='pie', autopct='%1.1f%%', ax=ax)
-    ax.set_ylabel('')
-    ax.set_title('Expense Distribution by Category')
-    ax.legend(loc='best')
-    st.pyplot(fig)
+    fig = px.pie(df, names='Category', values='Amount (₹)', title='Expense Distribution by Category')
+    st.plotly_chart(fig)
 
-    # Plot spending trend by date
+    # Plot spending trend by date using Plotly
     st.write("### Daily Spending Trend")
-    fig, ax = plt.subplots()
-    df.groupby('Date')['Amount (₹)'].sum().plot(kind='line', marker='o', ax=ax)
-    ax.set_ylabel('Amount (₹)')
-    ax.set_title('Spending Trend Over Time')
-    st.pyplot(fig)
+    trend_fig = px.line(df, x='Date', y='Amount (₹)', title='Spending Trend Over Time')
+    st.plotly_chart(trend_fig)
 
     # Inbuilt Calculator
     st.sidebar.header("Quick Calculator")
